@@ -25,12 +25,15 @@ public class MainActivity extends ActionBarActivity {
     private double longitude = 0;
     private boolean valid = false;
 
+    private DrawView drawView = null;
+
     private ActiveListener activeListener = new ActiveListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        drawView = (DrawView)findViewById(R.id.drawView);
     }
 
 
@@ -55,13 +58,7 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    /**
-     * Set all user interface components to the current state
-     */
-    private void setUI() {
-        
 
-    }
     /**
      * Called when this application becomes foreground again.
      */
@@ -70,7 +67,6 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
 
 
-        setUI();
         registerListeners();
     }
 
@@ -105,6 +101,7 @@ public class MainActivity extends ActionBarActivity {
             onLocation(location);
         }
     }
+
     private void onLocation(Location location) {
         if(location == null) {
             return;
@@ -112,9 +109,9 @@ public class MainActivity extends ActionBarActivity {
 
         latitude = location.getLatitude();
         longitude = location.getLongitude();
+        drawView.addLocation(location);
         valid = true;
 
-        setUI();
     }
 
 
