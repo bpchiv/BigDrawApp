@@ -10,4 +10,10 @@ public class DrawView extends View{
     public DrawView(Context context) {
         super(context);
     }
+
+    public void onDraw(int x, int y){
+
+    }
+
+
 }
