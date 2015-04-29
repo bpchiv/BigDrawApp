@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Location;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -47,10 +48,12 @@ public class DrawView extends View{
         customPaint = new Paint();
         customPaint.setStyle(Paint.Style.STROKE);
         customPaint.setColor(Color.BLACK);
+        customPaint.setStrokeWidth((float)3.0);
     }
 
     public void addLocation(Location location){
         locations.add(location);
+        Log.i("location size", String.valueOf(locations.size()));
         invalidate();
     }
 
@@ -78,8 +81,12 @@ public class DrawView extends View{
         double y = (height/180.0) * (90 - locations.get(0).getLatitude());
 
         for(int i = 1; i < locations.size(); i++){
-            double x2 = (width/360.0) * (180 + locations.get(i).getLongitude());
-            double y2 = (height/180.0) * (90 - locations.get(i).getLatitude());
+            double x2 = (width/180.0) * (90 + locations.get(i).getLongitude());
+            double y2 = (height/90) * (45 - locations.get(i).getLatitude());
+
+            x2 = ((x-x2)*0.9)+x2;
+            y2 = ((y-y2)*0.9)+y2;
+
             canvas.drawLine((float)x, (float)y, (float)x2, (float)y2, customPaint);
             x = x2;
             y = y2;

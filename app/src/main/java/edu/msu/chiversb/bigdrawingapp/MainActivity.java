@@ -1,5 +1,6 @@
 package edu.msu.chiversb.bigdrawingapp;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Criteria;
@@ -34,6 +35,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         drawView = (DrawView)findViewById(R.id.drawView);
+
+        // Get the location manager
+        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
     }
 
 
@@ -96,7 +100,7 @@ public class MainActivity extends ActionBarActivity {
         String bestAvailable = locationManager.getBestProvider(criteria, true);
 
         if(bestAvailable != null) {
-            locationManager.requestLocationUpdates(bestAvailable, 500, 1, activeListener);
+            locationManager.requestLocationUpdates(bestAvailable, 100, 1, activeListener);
             Location location = locationManager.getLastKnownLocation(bestAvailable);
             onLocation(location);
         }
