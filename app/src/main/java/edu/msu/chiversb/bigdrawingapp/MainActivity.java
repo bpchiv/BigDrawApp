@@ -1,7 +1,9 @@
 package edu.msu.chiversb.bigdrawingapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Location;
@@ -19,6 +21,10 @@ import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
+    /**
+     * Request code when selecting a color
+     */
+    private static final int SELECT_COLOR = 1;
 
     private LocationManager locationManager = null;
 
@@ -50,18 +56,28 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if(id == R.id.menu_color){
+            // Get a color from the gallery
+            Intent intent = new Intent(this, ColorSelectActivity.class);
+            startActivityForResult(intent, SELECT_COLOR);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == SELECT_COLOR && resultCode == RESULT_OK){
+            // Response from the color selection activity
+            int color = data.getIntExtra(ColorSelectActivity.COLOR, Color.BLACK);
+            drawView.setColor(color);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
 
     /**
      * Called when this application becomes foreground again.

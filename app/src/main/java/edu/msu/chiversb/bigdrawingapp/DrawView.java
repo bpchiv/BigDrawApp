@@ -19,8 +19,7 @@ public class DrawView extends View{
      * Paint to use when drawing the custom color hat
      */
     private Paint customPaint;
-    private double transLat = 0;
-    private double transLong = 0;
+
     private ArrayList<Location> locations = new ArrayList<Location>();
     private int color = 0;
     private boolean firstDraw = true;
@@ -77,20 +76,78 @@ public class DrawView extends View{
             return;
         int width = canvas.getWidth();
         int height = canvas.getHeight();
+
+        double centerLong = locations.get(0).getLongitude();
+        double centerLat = locations.get(0).getLatitude();
+
         double x = (width/360.0) * (180 + locations.get(0).getLongitude());
         double y = (height/180.0) * (90 - locations.get(0).getLatitude());
 
-        for(int i = 1; i < locations.size(); i++){
-            double x2 = (width/180.0) * (90 + locations.get(i).getLongitude());
-            double y2 = (height/90) * (45 - locations.get(i).getLatitude());
+        double scaleX = x;
+        double scaleY = y;
 
-            x2 = ((x-x2)*0.9)+x2;
-            y2 = ((y-y2)*0.9)+y2;
+        for(int i = 1; i < locations.size(); i++) {
+            double dX = 0.0;
+            double dY = 0.0;
+
+            if(locations.get(i).getLongitude() > centerLong){
+                dX = scaleX + (locations.get(i).getLongitude() - centerLong) * 1000000;
+            }
+            else
+                dX = scaleX - (centerLong - locations.get(i).getLongitude()) * 1000000;
+
+            if(locations.get(i).getLatitude() > centerLat){
+                dY = scaleY + (locations.get(i).getLatitude() - centerLat) * 1000000;
+            }
+            else
+                dY = scaleY - (centerLat - locations.get(i).getLatitude()) * 1000000;
+
+
+            canvas.drawLine((float) x, (float) y, (float) dX, (float) dY, customPaint);
+            x = dX;
+            y = dY;
+        }
+
+
+        // old version; just in case
+
+        /*if(locations.isEmpty())
+            return;
+        int width = canvas.getWidth();
+        int height = canvas.getHeight();
+
+        double x = (width/360.0) * (180 + locations.get(0).getLongitude());
+        double y = (height/180.0) * (90 - locations.get(0).getLatitude());
+
+        double scaleX = x;
+        double scaleY = y;
+
+        for(int i = 1; i < locations.size(); i++){
+
+            double x2 = (width/360.0) * (180 + locations.get(i).getLongitude());
+            double y2 = (height/180.0) * (90 - locations.get(i).getLatitude());
+
+            double saveX2 = x2;
+            double saveY2 = y2;
+
+
+            if (locations.get(i).getLongitude() > locations.get(i-1).getLongitude())
+                x2 = x2 - ((x2 - scaleX) * 1000000);
+            else
+                x2 = x2 + ((scaleX - x2) * 1000000);
+
+            if (locations.get(i).getLatitude() > locations.get(i-1).getLatitude())
+                y2 = y2 - ((y2 - scaleY) * 1000000);
+            else
+                y2 = y2 + ((scaleY - y2) * 1000000);
 
             canvas.drawLine((float)x, (float)y, (float)x2, (float)y2, customPaint);
             x = x2;
             y = y2;
-        }
+
+            scaleX = saveX2;
+            scaleY = saveY2;
+        }*/
     }
 
 
