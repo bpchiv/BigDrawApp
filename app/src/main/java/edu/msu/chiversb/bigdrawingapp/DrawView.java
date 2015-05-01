@@ -23,7 +23,10 @@ public class DrawView extends View{
     private double centerLat = 0;
     private ArrayList<Location> locations = new ArrayList<Location>();
     private ArrayList<Integer> colors = new ArrayList<Integer>();
+    private ArrayList<Float> penWidth = new ArrayList<Float>();
+
     private boolean firstDraw = true;
+    private float y=(float)0.0;
 
     public DrawView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -48,12 +51,18 @@ public class DrawView extends View{
         customPaint = new Paint();
         customPaint.setStyle(Paint.Style.STROKE);
         customPaint.setColor(Color.BLACK);
-        customPaint.setStrokeWidth((float)3.0);
+        customPaint.setStrokeWidth(y);
+    }
+
+    @Override
+    public void setY(float y) {
+        this.y = y;
     }
 
     public void addLocation(Location location){
         locations.add(location);
         colors.add(customPaint.getColor());
+        penWidth.add(y);
         Log.i("location size", String.valueOf(locations.size()));
         invalidate();
     }
@@ -91,6 +100,7 @@ public class DrawView extends View{
         for(int i = 1; i < locations.size(); i++) {
 
             customPaint.setColor(colors.get(i));
+            customPaint.setStrokeWidth(penWidth.get(i));
 
             double dX = 0.0;
             double dY = 0.0;

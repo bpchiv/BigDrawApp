@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Location;
@@ -11,6 +15,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -20,7 +25,7 @@ import android.widget.Toast;
 import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements SensorEventListener{
     /**
      * Request code when selecting a color
      */
@@ -36,6 +41,12 @@ public class MainActivity extends ActionBarActivity {
 
     private ActiveListener activeListener = new ActiveListener();
 
+    private SensorManager senSensorManager;
+    private Sensor senAccelerometer;
+
+    private float y = (float)0.0;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +55,10 @@ public class MainActivity extends ActionBarActivity {
 
         // Get the location manager
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+        senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        senSensorManager.registerListener(this, senAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
     }
 
 
@@ -63,6 +78,10 @@ public class MainActivity extends ActionBarActivity {
             Intent intent = new Intent(this, ColorSelectActivity.class);
             startActivityForResult(intent, SELECT_COLOR);
             return true;
+        }
+        if(id == R.id.menu_submit){
+            ViewSender sender = new ViewSender();
+            sender.sendView(this,  drawView, "Pollack");
         }
 
         return super.onOptionsItemSelected(item);
@@ -86,7 +105,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
 
-
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         registerListeners();
     }
 
@@ -95,6 +114,7 @@ public class MainActivity extends ActionBarActivity {
      */
     @Override
     protected void onPause() {
+        senSensorManager.unregisterListener(this);
         unregisterListeners();
         super.onPause();
     }
@@ -157,4 +177,20 @@ public class MainActivity extends ActionBarActivity {
         }
 
     }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        Sensor mySensor = event.sensor;
+
+        if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+               drawView.setY(event.values[1]);
+        }
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
 }

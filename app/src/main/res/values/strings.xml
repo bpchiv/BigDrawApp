@@ -5,4 +5,5 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_color_select"> Select a Color</string>
     <string name="menu_color">Change Color</string>
+    <string name="menu_submit">Submit</string>
 </resources>
